@@ -1,6 +1,6 @@
 /*
 ====================================================
-DDL Script: Create and Load Bronze Tables
+DDL Script: Create Bronze Tables
 ====================================================
 Script Purpose:
   This script creates tables in the 'bronze' schema, dropping existing tables
@@ -8,134 +8,70 @@ Script Purpose:
 */
 
 
-CREATE OR REPLACE PROCEDURE bronze.load_bronze()
-LANGUAGE plpgsql
-AS $$
-DECLARE
-	start_time TIMESTAMP;
-	end_time TIMESTAMP;
-	batch_start_time TIMESTAMP;
-	batch_end_time TIMESTAMP;
-BEGIN
-	batch_start_time := clock_timestamp();	
-	RAISE NOTICE '====================';
-	RAISE NOTICE 'Loading Bronze Layer';
-	RAISE NOTICE '====================';
 
-	RAISE NOTICE '---------------------';
-	RAISE NOTICE 'Loading CRM Tables';
-	RAISE NOTICE '---------------------';
-	
-	start_time := clock_timestamp();
-	RAISE NOTICE '>> Truncating Table: bronze.crm_cust_info';
-	TRUNCATE TABLE bronze.crm_cust_info;
-	RAISE NOTICE '>> Inserting Data: bronze.crm_cust_info';
-	COPY bronze.crm_cust_info
-	FROM 'D:/sql-data-warehouse-project/datasets/source_crm/cust_info.csv'
-	WITH (
-		FORMAT csv,
-		HEADER true,
-		DELIMITER ','
-	);
-	end_time := clock_timestamp();
-	RAISE NOTICE '>> Load Duration: % seconds', ROUND(EXTRACT(EPOCH FROM (end_time - start_time))::numeric, 2);
-	RAISE NOTICE '>> --------------------';
-	
+DROP TABLE IF EXISTS bronze.crm_cust_info;
+CREATE TABLE bronze.crm_cust_info (
+	cst_id int4 NULL,
+	cst_key varchar(50) NULL,
+	cst_firstname varchar(50) NULL,
+	cst_lastname varchar(50) NULL,
+	cst_marital_status varchar(50) NULL,
+	cst_gndr varchar(50) NULL,
+	cst_create_date date NULL
+);
 
-	start_time := clock_timestamp();
-	RAISE NOTICE '>> Truncating Table: bronze.crm_prd_info';
-	TRUNCATE TABLE bronze.crm_prd_info;
-	RAISE NOTICE '>> Inserting Data: bronze.crm_prd_info';
-	COPY bronze.crm_prd_info
-	FROM 'D:/sql-data-warehouse-project/datasets/source_crm/prd_info.csv'
-	WITH (
-		FORMAT csv,
-		HEADER true,
-		DELIMITER ','
-	);
-	end_time := clock_timestamp();
-	RAISE NOTICE '>> Load Duration: % seconds', ROUND(EXTRACT(EPOCH FROM (end_time - start_time))::numeric, 2);
-	RAISE NOTICE '>> --------------------';
+DROP TABLE IF EXISTS bronze.crm_prd_info;
+CREATE TABLE bronze.crm_prd_info (
+	prd_id int4 NULL,
+	prd_key varchar(50) NULL,
+	prd_nm varchar(100) NULL,
+	prd_cost float8 NULL,
+	prd_line varchar(50) NULL,
+	prd_start_dt date NULL,
+	prd_end_dt date NULL
+);
 
-	start_time := clock_timestamp();	
-	RAISE NOTICE '>> Truncating Table: bronze.crm_sales_details';
-	TRUNCATE TABLE bronze.crm_sales_details;
-	
-	RAISE NOTICE '>> Inserting Data: bronze.crm_sales_details';
-	COPY bronze.crm_sales_details
-	FROM 'D:/sql-data-warehouse-project/datasets/source_crm/sales_details.csv'
-	WITH (
-		FORMAT csv,
-		HEADER true,
-		DELIMITER ','
-	);
-	end_time := clock_timestamp();
-	RAISE NOTICE '>> Load Duration: % seconds', ROUND(EXTRACT(EPOCH FROM (end_time - start_time))::numeric, 2);
-	RAISE NOTICE '>> --------------------';
 
-	RAISE NOTICE '---------------------';
-	RAISE NOTICE 'Loading ERP Tables';
-	RAISE NOTICE '---------------------';
-	
-	start_time := clock_timestamp();
-	RAISE NOTICE '>> Truncating Table: bronze.erp_cust_az12';
-	TRUNCATE TABLE bronze.erp_cust_az12;
-	
-	RAISE NOTICE '>> Inserting Data: bronze.erp_cust_az12';
-	COPY bronze.erp_cust_az12
-	FROM 'D:/sql-data-warehouse-project/datasets/source_erp/CUST_AZ12.csv'
-	WITH (
-		FORMAT csv,
-		HEADER true,
-		DELIMITER ','
-	);
-	end_time := clock_timestamp();
-	RAISE NOTICE 'Load Duration: % seconds', ROUND(EXTRACT(EPOCH FROM (end_time - start_time))::numeric, 2);
-	RAISE NOTICE '>> --------------------';
+DROP TABLE IF EXISTS bronze.crm_sales_details;
+CREATE TABLE bronze.crm_sales_details (
+	sls_ord_num varchar(50) NULL,
+	sls_prd_key varchar(50) NULL,
+	sls_cust_id int4 NULL,
+	sls_order_dt int4 NULL,
+	sls_ship_dt int4 NULL,
+	sls_due_dt int4 NULL,
+	sls_sales float8 NULL,
+	sls_quantity int4 NULL,
+	sls_price float8 NULL
+);
 
-	start_time = clock_timestamp();
-	RAISE NOTICE '>> Truncating Table: bronze.erp_loc_a101';
-	TRUNCATE TABLE bronze.erp_loc_a101;
-	
-	RAISE NOTICE '>> Inserting Data: bronze.erp_loc_a101';
-	COPY bronze.erp_loc_a101
-	FROM 'D:/sql-data-warehouse-project/datasets/source_erp/LOC_A101.csv'
-	WITH (
-		FORMAT csv,
-		HEADER true,
-		DELIMITER ','
-	);
-	end_time = clock_timestamp();
-	RAISE NOTICE '>> Load Duration: % seconds', ROUND(EXTRACT(EPOCH FROM (end_time - start_time))::numeric, 2);
-	RAISE NOTICE '>> --------------------';
+DROP TABLE IF EXISTS bronze.erp_cust_az12;
+CREATE TABLE bronze.erp_cust_az12 (
+	cid varchar(50) NULL,
+	bdate date NULL,
+	gen varchar(20) NULL
+);
 
-	start_time = clock_timestamp();
-	RAISE NOTICE '>> Truncating Table: bronze.erp_px_cat_g1v2';
-	TRUNCATE TABLE bronze.erp_px_cat_g1v2;
-	
-	RAISE NOTICE '>> Inserting Data: bronze.erp_px_cat_g1v2';
-	COPY bronze.erp_px_cat_g1v2
-	FROM 'D:/sql-data-warehouse-project/datasets/source_erp/PX_CAT_G1V2.csv'
-	WITH (
-		FORMAT csv,
-		HEADER true,
-		DELIMITER ','
-	);
-	end_time = clock_timestamp();
-	RAISE NOTICE '>> Load Duration: % seconds', ROUND(EXTRACT(EPOCH FROM (end_time - start_time))::numeric, 2);
-	RAISE NOTICE '>> --------------------';
+DROP TABLE IF EXISTS bronze.erp_loc_a101;
+CREATE TABLE bronze.erp_loc_a101 (
+	cid varchar(50) NULL,
+	cntry varchar(50) NULL
+);
 
-	batch_end_time = clock_timestamp();	
-	RAISE NOTICE '=========================================';
-	RAISE NOTICE 'Bronze Layer Load Completed';
-	RAISE NOTICE '	- Total Load Duration: % seconds', ROUND(EXTRACT(EPOCH FROM (batch_end_time -
-															batch_start_time))::numeric, 2);
-	RAISE NOTICE '=========================================';
-EXCEPTION
-	WHEN OTHERS THEN
-		RAISE NOTICE 'Error occurred: %', SQLERRM;
-END;
-$$;
+DROP TABLE IF EXISTS bronze.erp_px_cat_g1v2;
+CREATE TABLE bronze.erp_px_cat_g1v2 (
+	id varchar(50) NULL,
+	cat varchar(50) NULL,
+	subcat varchar(50) NULL,
+	maintenance varchar(10) NULL
+);
+
+
+
+
+
+
+
 
 
 
