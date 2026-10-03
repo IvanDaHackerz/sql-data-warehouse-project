@@ -1,4 +1,20 @@
+/*
+====================================
+Stored Procedure: Load Silver Layer (Bronze -> Silver)
 
+Script Purpose:
+  This stored procedure loads data into the 'silver' schema from the bronze layer.
+  It performs the following actions:
+  -  Truncates the silver tables before loading data
+  -  Uses the INSERT INTO command to load data from the bronze tables into the silver tables.
+
+  Parameters:
+  None
+
+  Usage Example:
+  CALL bronze.load_bronze();
+====================================
+*/
 
 CREATE OR REPLACE PROCEDURE silver.load_silver()
 LANGUAGE plpgsql
