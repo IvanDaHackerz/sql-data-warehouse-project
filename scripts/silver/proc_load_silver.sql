@@ -149,6 +149,9 @@ BEGIN
 	RAISE NOTICE '>> Load Duration: % seconds', ROUND(EXTRACT(EPOCH FROM (end_time - start_time))::numeric, 2);
 	RAISE NOTICE '>> ------------------';
 
+	RAISE NOTICE '====================';
+	RAISE NOTICE 'Loading ERP Tables';
+	RAISE NOTICE '====================';
 	RAISE NOTICE '';
 	start_time := clock_timestamp();
 	RAISE NOTICE '>> Truncating Table: silver.erp_cust_az12';
