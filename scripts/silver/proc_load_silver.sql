@@ -191,6 +191,7 @@ BEGIN
 			WHEN UPPER(TRIM(cntry)) IN ('US', 'UNITED STATES', 'USA') THEN 'United States'
 			WHEN UPPER(TRIM(cntry)) = 'CANADA' THEN 'Canada'
 			WHEN UPPER(TRIM(cntry)) = ('FRANCE') THEN 'France'
+			WHEN UPPER(TRIM(cntry)) = 'UNITED KINGDOM' THEN 'United Kingdom'
 			ELSE 'n/a'
 		END cntry
 	FROM bronze.erp_loc_a101;
